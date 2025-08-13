@@ -20,8 +20,11 @@ if __name__ == "__main__":
         varience.append(i*0.01)
     for i in k:
         BigB.append(plot_data_for_B(i,size,mean))
+    # for i in range(5):
+    #     plt.subplot(5,1,i+1)
+    #     plt.plot(varience,BigB[i])
+    #     plt.title(f"k={5*(i+1)}")
     for i in range(5):
-        plt.subplot(5,1,i+1)
-        plt.plot(varience,BigB[i])
-        plt.title(f"k={5*(i+1)}")
+        plt.plot(varience,BigB[i],label=f"k=: {k[i]}")
+    plt.legend()
     plt.show()
