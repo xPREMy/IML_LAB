@@ -1,65 +1,48 @@
 import numpy as np
-# a
+import pandas as pd
 
-f = open("iris.txt", "r")
-n = len(f.readlines())
-f.seek(0)
+# Load the dataset from the text file
+df=pd.read_csv('iris.txt')
+print(df)
 
-list = []
-for i in range(n):
-  f.readline()
+# Prepare the data by dropping the non-numeric 'Iris plant' column
+X=df.drop("Iris plant", axis=1).values
+n, d = X.shape
 
-  line = []
+# (a) Calculate the covariance matrix for the features
+C = np.cov(X, rowvar=False)
+print("(a) Covariance Matrix:\n", C)
 
-  for i in f.readline().split(","):
-    try:
-      line.append(float(i))
-    except:
-      pass
-  if len(line):
-    list.append(line)
+# (b) Find the most and least correlated feature pairs
+corr_matrix = np.corrcoef(X, rowvar=False)
+triu_indices = np.triu_indices(d, k=1) # Get upper triangle indices to avoid duplicates
+corr_values = corr_matrix[triu_indices]
+print(corr_matrix)
+max_corr_idx = np.argmax(corr_values)
+min_corr_idx = np.argmin(corr_values)
+feature_names = df.columns
+pairs = list(zip(triu_indices[0], triu_indices[1]))
 
-f.close()
+print("\n(b) Most positively correlated features:",
+      (feature_names[pairs[max_corr_idx][0]], feature_names[pairs[max_corr_idx][1]]),
+      "with correlation =", corr_values[max_corr_idx])
 
-list = np.array(list)
-print(list)
+print("Most negatively correlated features:",
+      (feature_names[pairs[min_corr_idx][0]], feature_names[pairs[min_corr_idx][1]]),
+      "with correlation =", corr_values[min_corr_idx])
 
-cov_matrix = np.cov(list.T)
-print("\n THe covariance matrix is: \n",cov_matrix)
+print("Least correlated (closest to 0):",
+      (feature_names[pairs[np.argmin(np.abs(corr_values))][0]],
+       feature_names[pairs[np.argmin(np.abs(corr_values))][1]]),
+      "with correlation =", corr_values[np.argmin(np.abs(corr_values))])
 
-# b
+# (c) Calculate the sample mean and variance for each feature
+df2=df.drop('Iris plant',axis=1)
+means =df2.mean()
+variances = df2.var(ddof=1)
+print("\n(c) Sample means:\n", means)
+print("Sample variances:\n", variances)
 
-print(np.where(cov_matrix == np.max(cov_matrix)))
-print(np.where(cov_matrix == np.min(cov_matrix)))
-
-# c
-
-feature_1 = []
-feature_2 = []
-feature_3 = []
-feature_4 = []
-
-for i in list:
-  feature_1.append(i[0])
-  feature_2.append(i[1])
-  feature_3.append(i[2])
-  feature_4.append(i[3])
-
-mean_1 = np.mean(feature_1)
-mean_2 = np.mean(feature_2)
-mean_3 = np.mean(feature_3)
-mean_4 = np.mean(feature_4)
-
-print(mean_1,mean_2,mean_3,mean_4)
-
-var_1 = np.var(feature_1)
-var_2 = np.var(feature_2)
-var_3 = np.var(feature_3)
-var_4 = np.var(feature_4)
-
-print(var_1,var_2,var_3,var_4)
-
-# d
-
-val,vec = np.linalg.eigh(cov_matrix)
-print(val)
+# (d) Find the eigenvalues of the covariance matrix
+eigenvalues, eigenvectors = np.linalg.eigh(C)
+print("\n(d) Eigenvalues of covariance matrix:\n", eigenvalues)
