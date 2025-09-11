@@ -125,10 +125,12 @@ class linear_regression_model:
         self.weights=np.zeros((xt.shape[1],1)) # weight initialization
         self.alpha=alpha
         self.epochs=epochs
+        self.grads=[]
         for i in range(self.epochs):
             m=xt.shape[0]
             # Gradient descent update rule
             self.weights-=(self.alpha*2/(m))*(xt.T@(xt@self.weights-yt))
+            self.grads.append(np.linalg.norm((2/m)*(xt.T@(xt@self.weights-yt))))
             # Track training and validation error
             train_err=error(xt,self.weights,yt)
             val_err=error(xv,self.weights,yv)
@@ -155,7 +157,13 @@ class linear_regression_model:
         plt.title("error vs epochs")
         plt.legend()
         plt.show()
-
+    def plot_mag_gradient_loss(self):
+        epoch=np.arange(1,self.epochs+1)
+        plt.plot(epoch,self.grads,c="red")
+        plt.xlabel("epochs")
+        plt.ylabel("magnitude of gradient of loss fn")
+        plt.title("magnitude of gradient of loss fn vs epochs")
+        plt.show()
 # %%
 # Train model with Gradient Descent
 linear_regression=linear_regression_model()
@@ -164,6 +172,7 @@ linear_regression.fit(x_train,y_train ,x_val ,  y_val , alpha=0.31,epochs=30000)
 # %%
 # Compare weights from closed-form vs gradient descent
 linear_regression.errorplot()
+linear_regression.plot_mag_gradient_loss()
 print("theta1 : \n",theta_1)
 theta_2=linear_regression.weights
 print("theta2 : \n",theta_2)
