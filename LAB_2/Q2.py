@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 # %%
 # Load dataset
 df= pd.read_csv("Q2.csv",header=None)
-df=df.sample(frac=1,random_state=30).reset_index(drop=True)# shuffle data
+df=df.sample(frac=1,random_state=42).reset_index(drop=True)# shuffle data
 df.columns=["Y","x1","x2"]
 
 # Prepare labels (Y) and features (X)
@@ -155,7 +155,7 @@ class logistic_regression():
 # %%
 # Instantiate and train logistic regression model
 logistic_model=logistic_regression()
-logistic_model.fit(x_train,y_train,x_val,y_val,0.1,7300)
+logistic_model.fit(x_train,y_train,x_val,y_val,0.1,1200)
 
 # %%
 # Plot loss and accuracy over iterations
@@ -200,7 +200,7 @@ for i in thresholds:
     recall=logistic_model.recall_for_binary_classification()
     precision_plot.append(precision)
     recall_plot.append(recall)
-plt.scatter(recall_plot,precision_plot)
+plt.plot(recall_plot,precision_plot)
 plt.xlabel("recall")
 plt.ylabel("precision")
 plt.title("precision VS recall for TRAINING SET")
@@ -216,7 +216,7 @@ for i in thresholds:
     recall=logistic_model.recall_for_binary_classification()
     precision_plot.append(precision)
     recall_plot.append(recall)
-plt.scatter(recall_plot,precision_plot)
+plt.plot(recall_plot,precision_plot)
 plt.xlabel("recall")
 plt.ylabel("precision")
 plt.title("precision VS recall for VALIDATION SET")
@@ -231,23 +231,34 @@ for i in thresholds:
     precision=logistic_model.precision_for_binary_classification()
     recall=logistic_model.recall_for_binary_classification()
     precision_plot.append(precision)
-    recall_plot.append(recall)
-plt.scatter(recall_plot,precision_plot)
+    recall_plot.append(recall)    
+plt.plot(recall_plot,precision_plot)
 plt.xlabel("recall")
 plt.ylabel("precision")
-plt.title("precision VS recall for VALIDATION SET")
+plt.title("precision VS recall for test SET")
 plt.show()
 
 # %%
 weights=logistic_model.weights
-plt.scatter(df[df["Y"] == 1]["x1"],
-            df[df["Y"] == 1]["x2"],
-            c="orange",
-            label="Class 1") 
-plt.scatter(df[df["Y"] == -1]["x1"],
-            df[df["Y"] == -1]["x2"],
-            c="blue",
-            label="Class -1")
+plt.figure(figsize=(8, 6))
+y_train = np.array(y_train).ravel() 
+mask=(y_train==1)
+plt.scatter(x_train[mask,0],x_train[mask,1],c="orange",marker="^",label="training class 1")
+mask=(y_train==0)
+plt.scatter(x_train[mask,0],x_train[mask,1],c="blue",marker="^",label="training class 0")
+
+y_val = np.array(y_val).ravel() 
+mask=(y_val==1)
+plt.scatter(x_val[mask,0],x_val[mask,1],c="pink",marker="o",label="validation class 1")
+mask=(y_val==0)
+plt.scatter(x_val[mask,0],x_val[mask,1],c="purple",marker="o",label="vaidation class 0")
+
+y_test = np.array(y_test).ravel()
+mask = (y_test == 1)
+plt.scatter(x_test[mask, 0], x_test[mask, 1], c="red", marker="s", label="Test Class 1")
+mask = (y_test == 0)
+plt.scatter(x_test[mask, 0], x_test[mask, 1], c="cyan", marker="s", label="Test Class 0")
+
 plt.plot(df["x1"],-(weights[2]+df["x1"]*weights[0])/weights[1]) # decision boundary line
 plt.xlabel("x1")
 plt.ylabel("x2")
@@ -256,6 +267,3 @@ plt.legend()
 plt.show()
 
 # %%
-
-
-
