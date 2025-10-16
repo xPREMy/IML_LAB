@@ -114,6 +114,8 @@ class SpectralClustering:
         self.L = self.D - self.W
 
         eigvals, eigvecs = np.linalg.eigh(self.L)
+        idx=np.argsort(eigvals)
+        eigvecs=eigvecs[:,idx]
         self.H = eigvecs[:,:2]
         print(self.H.shape)
         ### PART B ####

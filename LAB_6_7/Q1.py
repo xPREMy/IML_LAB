@@ -38,10 +38,16 @@ class k_means:
 
     def partition_update(self):
         n,d=self.x.shape
+        k=self.no_of_partitions
         self.partitions=[[] for _ in range(self.no_of_partitions)]
-        partitions_distances= np.linalg.norm(
-        self.x[:, np.newaxis, :] - self.partition_means[np.newaxis, :, :], axis=2
-        )
+        partitions_distances = np.zeros((n, k))
+
+        # Loop over every data point
+        for i in range(n):
+            # Loop over every cluster mean
+            for j in range(k):         
+                partitions_distances[i, j]= np.linalg.norm(self.x[i] - self.partition_means[j])
+
         for i in range(n):
             arg=np.argmin(partitions_distances[i])
             self.partitions[arg].append(i)
@@ -80,7 +86,7 @@ class k_means:
 
 # %%
 model=k_means()
-model.fit(X,2,9)
+model.fit(X,2,10)
 
 # %%
 model._2Dplot_for_two_partitions()
